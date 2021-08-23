@@ -1,6 +1,6 @@
 import { ConnectionOptions } from 'typeorm';
 
-const ormConfig: ConnectionOptions = {
+const config: ConnectionOptions = {
     type: 'postgres',
     host: 'localhost',
     port: 5432,
@@ -9,10 +9,10 @@ const ormConfig: ConnectionOptions = {
     database: 'nest-api',
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: false,
-    migrations: [__dirname + 'migrations/**/*{.ts,.js}'],
+    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
     cli: {
         migrationsDir: 'src/migrations',
     },
 };
 
-export default ormConfig;
+export default config;
