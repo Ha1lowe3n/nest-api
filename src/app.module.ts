@@ -16,6 +16,8 @@ import { TagsModule } from './tags/tags.module';
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
         }),
         TagsModule,
     ],
