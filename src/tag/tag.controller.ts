@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { TagsService } from './tags.service';
+import { TagService } from './tag.service';
 
 @Controller('tags')
-export class TagsController {
-    constructor(private readonly tagsService: TagsService) {}
+export class TagController {
+    constructor(private readonly tagsService: TagService) {}
 
     @Get()
     async findAll(): Promise<{ tags: string[] }> {
