@@ -38,9 +38,7 @@ export class UserService {
 
     async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
         const userByEmail = await this.userRepository.findOne(
-            {
-                email: loginUserDto.email,
-            },
+            { email: loginUserDto.email },
             { select: ['id', 'email', 'username', 'bio', 'image', 'password'] },
         );
         let unhashPassword: boolean;
@@ -60,6 +58,10 @@ export class UserService {
 
         delete userByEmail.password;
         return userByEmail;
+    }
+
+    findById(id: number): Promise<UserEntity> {
+        return this.userRepository.findOne(id);
     }
 
     generateJWT(user: UserEntity): string {
