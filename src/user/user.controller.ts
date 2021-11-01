@@ -17,6 +17,7 @@ import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { UpdateGuard } from './guards/update.guard';
 
 @Controller()
 export class UserController {
@@ -47,7 +48,7 @@ export class UserController {
     }
 
     @Put('user')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, UpdateGuard)
     @UsePipes(new ValidationPipe())
     async updateUser(
         @User('id') currentUserId: number,
