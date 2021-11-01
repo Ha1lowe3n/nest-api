@@ -1,3 +1,4 @@
+import { UpdateUserDto } from './dto/updateUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,13 +18,10 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-        const userByEmail = await this.userRepository.findOne({
-            email: createUserDto.email,
-        });
-        const userByUsername = await this.userRepository.findOne({
-            username: createUserDto.username,
-        });
-        if (userByUsername || userByEmail) {
+        const { email, username } = await this.checkEmailAndUsername(
+            createUserDto,
+        );
+        if (email || username) {
             throw new HttpException(
                 'Username or email are taken',
                 HttpStatus.UNPROCESSABLE_ENTITY,
@@ -33,7 +31,7 @@ export class UserService {
         const newUser = new UserEntity();
         Object.assign(newUser, createUserDto);
 
-        return this.userRepository.save(newUser);
+        return await this.userRepository.save(newUser);
     }
 
     async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
@@ -60,8 +58,41 @@ export class UserService {
         return userByEmail;
     }
 
+    async updateUser(
+        userId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<UserEntity> {
+        const { email, username } = await this.checkEmailAndUsername(
+            updateUserDto,
+        );
+        if (email || username) {
+            throw new HttpException(
+                'Username or email are taken',
+                HttpStatus.UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        const findUser = await this.findById(userId);
+        Object.assign(findUser, updateUserDto);
+        return await this.userRepository.save(findUser);
+    }
+
     findById(id: number): Promise<UserEntity> {
         return this.userRepository.findOne(id);
+    }
+
+    async checkEmailAndUsername(dto: CreateUserDto | UpdateUserDto) {
+        const userByEmail = await this.userRepository.findOne({
+            email: dto.email,
+        });
+        const userByUsername = await this.userRepository.findOne({
+            username: dto.username,
+        });
+
+        return {
+            email: userByEmail,
+            username: userByUsername,
+        };
     }
 
     generateJWT(user: UserEntity): string {
