@@ -52,11 +52,11 @@ export class UserController {
     @UsePipes(new ValidationPipe())
     async updateUser(
         @User('id') currentUserId: number,
-        @Body('user') UpdateUserDto: UpdateUserDto,
+        @Body('user') updateUserDto: UpdateUserDto,
     ): Promise<UserResponse> {
         const updateUser = await this.userService.updateUser(
             currentUserId,
-            UpdateUserDto,
+            updateUserDto,
         );
         return this.userService.buildUserResponse(updateUser);
     }

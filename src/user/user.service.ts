@@ -18,10 +18,9 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-        const { email, username } = await this.checkEmailAndUsername(
-            createUserDto,
-        );
-        if (email || username) {
+        const { userByEmail, userByUsername } =
+            await this.checkEmailAndUsername(createUserDto);
+        if (userByEmail || userByUsername) {
             throw new HttpException(
                 'Username or email are taken',
                 HttpStatus.UNPROCESSABLE_ENTITY,
@@ -62,10 +61,9 @@ export class UserService {
         userId: number,
         updateUserDto: UpdateUserDto,
     ): Promise<UserEntity> {
-        const { email, username } = await this.checkEmailAndUsername(
-            updateUserDto,
-        );
-        if (email || username) {
+        const { userByEmail, userByUsername } =
+            await this.checkEmailAndUsername(updateUserDto);
+        if (userByEmail || userByUsername) {
             throw new HttpException(
                 'Username or email are taken',
                 HttpStatus.UNPROCESSABLE_ENTITY,
@@ -90,8 +88,8 @@ export class UserService {
         });
 
         return {
-            email: userByEmail,
-            username: userByUsername,
+            userByEmail,
+            userByUsername,
         };
     }
 
