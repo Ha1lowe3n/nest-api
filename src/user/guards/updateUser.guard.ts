@@ -9,11 +9,14 @@ import {
 import { ExpressRequest } from 'src/types/expressRequest.interface';
 
 @Injectable()
-export class UpdateGuard implements CanActivate {
+export class UpdateUserGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest<ExpressRequest>();
 
-        if (Object.keys(request.body.user).length !== 0) {
+        if (
+            Object.keys(request.body.user).length !== 0 &&
+            !Object.values(request.body.user).includes('')
+        ) {
             return true;
         }
 

@@ -7,6 +7,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleResponse } from './types/articleResponse.interface';
+import { UpdateArticleDto } from './dto/updateArticle.dto';
 
 @Injectable()
 export class ArticleService {
@@ -62,6 +63,30 @@ export class ArticleService {
         }
 
         return await this.articleRepository.delete({ slug });
+    }
+
+    async updateAtricle(
+        slug: string,
+        updateArticleDto: UpdateArticleDto,
+        currentUserId: number,
+    ): Promise<ArticleEntity> {
+        const findArticle = await this.articleRepository.findOne({ slug });
+
+        if (!findArticle) {
+            throw new HttpException('Slug is incorrect', HttpStatus.NOT_FOUND);
+        }
+        if (findArticle.author.id !== currentUserId) {
+            throw new HttpException(
+                'You are not an author',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+
+        if (updateArticleDto.title) {
+            findArticle.slug = this.getSlug(updateArticleDto.title);
+        }
+        Object.assign(findArticle, updateArticleDto);
+        return await this.articleRepository.save(findArticle);
     }
 
     buildArticleResponse(article: ArticleEntity): ArticleResponse {
