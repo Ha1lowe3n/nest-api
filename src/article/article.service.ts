@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import slugify from 'slugify';
 
 import { UserEntity } from 'src/user/user.entity';
@@ -37,13 +37,31 @@ export class ArticleService {
 
     async getArticle(slug: string): Promise<ArticleEntity> {
         const findArticle = await this.articleRepository.findOne({ slug });
-        console.log(findArticle);
 
         if (!findArticle) {
             throw new HttpException('Slug is incorrect', HttpStatus.NOT_FOUND);
         }
 
         return findArticle;
+    }
+
+    async deleteArticle(
+        slug: string,
+        currentUserId: number,
+    ): Promise<DeleteResult> {
+        const findArticle = await this.articleRepository.findOne({ slug });
+
+        if (!findArticle) {
+            throw new HttpException('Slug is incorrect', HttpStatus.NOT_FOUND);
+        }
+        if (findArticle.author.id !== currentUserId) {
+            throw new HttpException(
+                'You are not an author',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+
+        return await this.articleRepository.delete({ slug });
     }
 
     buildArticleResponse(article: ArticleEntity): ArticleResponse {

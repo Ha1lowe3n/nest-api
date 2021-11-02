@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Post,
@@ -37,5 +38,14 @@ export class ArticleController {
     async getArticle(@Param('slug') slug: string): Promise<ArticleResponse> {
         const article = await this.articleService.getArticle(slug);
         return this.articleService.buildArticleResponse(article);
+    }
+
+    @Delete(':slug')
+    @UseGuards(AuthGuard)
+    async deleteArticle(
+        @User('id') currentUserId: number,
+        @Param('slug') slug: string,
+    ) {
+        return await this.articleService.deleteArticle(slug, currentUserId);
     }
 }
