@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
+import slugify from 'slugify';
+
+import { UserEntity } from 'src/user/user.entity';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
+import { ArticleResponse } from './types/articleResponse.interface';
 
 @Injectable()
 export class ArticleService {
@@ -23,12 +26,24 @@ export class ArticleService {
             article.tagList = [];
         }
 
-        article.slug = 'foo';
+        article.slug = this.getSlug(createArticleDto.title);
 
         // магия typeorm
         // typeorm сам поймет, что в author нужно записать user.id, т.к. мы описали это на уровне postgres
         article.author = currentUser;
 
         return await this.articleRepository.save(article);
+    }
+
+    buildArticleResponse(article: ArticleEntity): ArticleResponse {
+        return { article };
+    }
+
+    private getSlug(title: string): string {
+        return (
+            slugify(title, { lower: true }) +
+            '-' +
+            ((Math.random() * Math.pow(36, 6)) | 0).toString(36)
+        );
     }
 }
