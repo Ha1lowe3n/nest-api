@@ -1,3 +1,4 @@
+import { UserEntity } from 'src/user/user.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
     BeforeUpdate,
     CreateDateColumn,
     UpdateDateColumn,
+    ManyToOne,
 } from 'typeorm';
 
 @Entity({ name: 'articles' })
@@ -41,6 +43,9 @@ export class ArticleEntity {
 
     @Column({ default: 0 })
     favotitesCount: number;
+
+    @ManyToOne(() => UserEntity, (user) => user.articles)
+    author: UserEntity;
 
     // @BeforeUpdate()
     // updateTimestamp() {

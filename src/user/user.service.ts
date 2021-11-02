@@ -36,7 +36,9 @@ export class UserService {
     async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
         const userByEmail = await this.userRepository.findOne(
             { email: loginUserDto.email },
-            { select: ['id', 'email', 'username', 'bio', 'image', 'password'] },
+            {
+                select: ['id', 'email', 'username', 'bio', 'image', 'password'],
+            },
         );
         let unhashPassword: boolean;
 
