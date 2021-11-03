@@ -130,6 +130,33 @@ export class ArticleService {
         return await this.articleRepository.save(findArticle);
     }
 
+    async addArticleToFavorites(
+        currentUserId: number,
+        slug: string,
+    ): Promise<ArticleEntity> {
+        const article = await this.articleRepository.findOne({ slug });
+
+        // relations - полуучаем value отношений, без явного указания eager в сущности
+        // eager - всегда добавляем value, relations - только сейчас
+        const user = await this.userRepository.findOne(currentUserId, {
+            relations: ['favorites'],
+        });
+        const isNotFavorited = user.favorites.findIndex(
+            (articleInFavorites) => articleInFavorites.id === article.id,
+        );
+
+        if (isNotFavorited === -1) {
+            user.favorites.push(article);
+            article.favotitesCount++;
+            await this.userRepository.save(user);
+            await this.articleRepository.save(article);
+        }
+
+        console.log(user);
+
+        return article;
+    }
+
     buildArticleResponse(article: ArticleEntity): ArticleResponse {
         return { article };
     }
