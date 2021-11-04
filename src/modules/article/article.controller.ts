@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { User } from 'src/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from '../user/user.entity';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { UpdateArticleDto } from './dto/updateArticle.dto';

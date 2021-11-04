@@ -1,10 +1,10 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
+import { UserService } from 'src/modules/user/user.service';
 
 import { DecodeType } from 'src/types/decode.type';
 import { ExpressRequest } from 'src/types/expressRequest.interface';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {

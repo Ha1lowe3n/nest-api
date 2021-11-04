@@ -1,4 +1,3 @@
-import { UserEntity } from 'src/user/user.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -8,6 +7,7 @@ import {
     UpdateDateColumn,
     ManyToOne,
 } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
 
 @Entity({ name: 'articles' })
 export class ArticleEntity {

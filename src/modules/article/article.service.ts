@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, getRepository, Repository } from 'typeorm';
 import slugify from 'slugify';
 
-import { UserEntity } from 'src/user/user.entity';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleResponse } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
+import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class ArticleService {

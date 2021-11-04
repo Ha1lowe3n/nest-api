@@ -9,13 +9,13 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import { User } from '../decorators/user.decorator';
+import { User } from '../../decorators/user.decorator';
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { UserResponse } from './types/userResponse.interface';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UpdateUserGuard } from './guards/updateUser.guard';
 
