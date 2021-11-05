@@ -18,11 +18,22 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+        const errorResponse = {
+            errors: {},
+        };
+
         const { userByEmail, userByUsername } =
             await this.checkEmailAndUsername(createUserDto);
+
+        if (userByEmail) {
+            errorResponse.errors['email'] = 'has already been taken';
+        }
+        if (userByUsername) {
+            errorResponse.errors['username'] = 'has already been taken';
+        }
         if (userByEmail || userByUsername) {
             throw new HttpException(
-                'Username or email are taken',
+                errorResponse,
                 HttpStatus.UNPROCESSABLE_ENTITY,
             );
         }
@@ -34,6 +45,12 @@ export class UserService {
     }
 
     async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
+        const errorResponse = {
+            errors: {
+                ['login or password']: 'is incorrect',
+            },
+        };
+
         const userByEmail = await this.userRepository.findOne(
             { email: loginUserDto.email },
             {
@@ -49,10 +66,7 @@ export class UserService {
             );
         }
         if (!userByEmail || !unhashPassword) {
-            throw new HttpException(
-                'login or password is incorrect',
-                HttpStatus.UNAUTHORIZED,
-            );
+            throw new HttpException(errorResponse, HttpStatus.UNAUTHORIZED);
         }
 
         delete userByEmail.password;
@@ -63,11 +77,17 @@ export class UserService {
         userId: number,
         updateUserDto: UpdateUserDto,
     ): Promise<UserEntity> {
+        const errorResponse = {
+            errors: {
+                ['Username or email']: 'are taken',
+            },
+        };
+
         const { userByEmail, userByUsername } =
             await this.checkEmailAndUsername(updateUserDto);
         if (userByEmail || userByUsername) {
             throw new HttpException(
-                'Username or email are taken',
+                errorResponse,
                 HttpStatus.UNPROCESSABLE_ENTITY,
             );
         }
