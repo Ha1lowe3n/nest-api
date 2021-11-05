@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import { User } from 'src/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ProfileService } from './profile.service';
@@ -9,10 +16,15 @@ export class ProfileController {
     constructor(private readonly profileService: ProfileService) {}
 
     @Get(':username')
+    @UseGuards(AuthGuard)
     async getProfile(
+        @User('id') currentUserId: number,
         @Param('username') username: string,
     ): Promise<ProfileResponse> {
-        const profile = await this.profileService.getProfile(username);
+        const profile = await this.profileService.getProfile(
+            username,
+            currentUserId,
+        );
         return this.profileService.buildProfileResponse(profile);
     }
 
@@ -23,6 +35,19 @@ export class ProfileController {
         @Param('username') profileUsername: string,
     ): Promise<ProfileResponse> {
         const profile = await this.profileService.followProfile(
+            currentUserId,
+            profileUsername,
+        );
+        return this.profileService.buildProfileResponse(profile);
+    }
+
+    @Delete(':username/follow')
+    @UseGuards(AuthGuard)
+    async deleteProfile(
+        @User('id') currentUserId: number,
+        @Param('username') profileUsername: string,
+    ): Promise<ProfileResponse> {
+        const profile = await this.profileService.unfollowProfile(
             currentUserId,
             profileUsername,
         );

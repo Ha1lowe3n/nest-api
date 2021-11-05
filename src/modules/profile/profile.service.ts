@@ -15,7 +15,10 @@ export class ProfileService {
         private readonly followRepository: Repository<FollowEntity>,
     ) {}
 
-    async getProfile(username: string): Promise<ProfileType> {
+    async getProfile(
+        username: string,
+        currentUserId: number,
+    ): Promise<ProfileType> {
         const findUser = await this.userRepository.findOne({ username });
 
         if (!findUser) {
@@ -25,9 +28,14 @@ export class ProfileService {
             );
         }
 
+        const follow = await this.followRepository.findOne({
+            followerId: currentUserId,
+            followingId: findUser.id,
+        });
+
         delete findUser.email;
 
-        return { ...findUser, following: false };
+        return { ...findUser, following: !!follow };
     }
 
     async followProfile(
@@ -63,6 +71,38 @@ export class ProfileService {
         }
 
         return { ...findUser, following: true };
+    }
+
+    async unfollowProfile(
+        currentUserId: number,
+        profileUsername: string,
+    ): Promise<ProfileType> {
+        const findUser = await this.userRepository.findOne({
+            username: profileUsername,
+        });
+
+        if (!findUser) {
+            throw new HttpException(
+                'Username is incorrect',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+        if (currentUserId === findUser.id) {
+            throw new HttpException(
+                "User can't unfollow to himself",
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        const follow = await this.followRepository.findOne({
+            followerId: currentUserId,
+            followingId: findUser.id,
+        });
+        if (follow) {
+            await this.followRepository.delete(follow);
+        }
+
+        return { ...findUser, following: false };
     }
 
     buildProfileResponse(profile: ProfileType): ProfileResponse {
