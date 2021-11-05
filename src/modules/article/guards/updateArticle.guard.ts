@@ -6,7 +6,7 @@ import {
     Injectable,
 } from '@nestjs/common';
 
-import { ExpressRequest } from 'src/types/expressRequest.interface';
+import { ExpressRequest } from 'src/shared/types/expressRequest.interface';
 
 @Injectable()
 export class UpdateArticleGuard implements CanActivate {

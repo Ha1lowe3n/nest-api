@@ -6,8 +6,8 @@ import {
     Post,
     UseGuards,
 } from '@nestjs/common';
-import { User } from 'src/decorators/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/shared/decorators/user.decorator';
+import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { ProfileService } from './profile.service';
 import { ProfileResponse } from './types/profileResponse.interface';
 

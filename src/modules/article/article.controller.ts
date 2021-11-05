@@ -11,8 +11,8 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { User } from 'src/decorators/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/shared/decorators/user.decorator';
+import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { UserEntity } from '../user/user.entity';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
