@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagEntity } from './entities/tag.entity';
 import { IResponse } from './interfaces/response.interface';
 
@@ -24,7 +23,7 @@ export class TagService {
         return await this.tagRepository.save(tag);
     }
 
-    buildResponse(tags: TagEntity[]) {
+    buildResponse(tags: TagEntity[]): IResponse {
         return {
             tags: [...tags],
         };

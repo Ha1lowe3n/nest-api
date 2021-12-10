@@ -40,7 +40,7 @@ describe('TagController (e2e)', () => {
             .expect(response);
     });
 
-    it('/ (POST) create', () => {
+    it('/ (POST) create', async () => {
         return request(app.getHttpServer())
             .post('/tags')
             .send({ title: 'ratata' })

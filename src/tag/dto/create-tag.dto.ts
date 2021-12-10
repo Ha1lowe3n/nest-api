@@ -4,5 +4,5 @@ export class CreateTagDto {
     @IsNotEmpty()
     @Length(3, 20)
     @IsString()
-    title: string;
+    readonly title: string;
 }
