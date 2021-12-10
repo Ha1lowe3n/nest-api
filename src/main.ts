@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    ValidationError,
-    ValidationPipe,
-} from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { config as dotenvConfig } from 'dotenv';
 

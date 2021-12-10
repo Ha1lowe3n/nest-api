@@ -32,6 +32,7 @@ export class UserService {
 
         const user = this.userRepository.create(dto);
         await this.userRepository.save(user);
+        console.log(user);
 
         delete user.password;
 
@@ -63,6 +64,10 @@ export class UserService {
         return user;
     }
 
+    async findById(id: number) {
+        return this.userRepository.findOne(id);
+    }
+
     generateJWT(user: UserEntity): string {
         return sign(
             {
@@ -75,6 +80,7 @@ export class UserService {
     }
 
     buildResponse(user: UserEntity): IResponseUser {
+        if (user.id) delete user.id;
         return {
             user: {
                 ...user,
