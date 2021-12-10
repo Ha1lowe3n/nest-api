@@ -33,8 +33,6 @@ export class UserService {
 
         delete user.password;
 
-        console.log(user);
-
         return user;
     }
 
@@ -50,8 +48,6 @@ export class UserService {
     }
 
     buildResponse(user: UserEntity): IResponseUser {
-        console.log(UserEntity);
-
         return {
             user: {
                 ...user,
