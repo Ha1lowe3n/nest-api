@@ -1,5 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+    INestApplication,
+    MiddlewareConsumer,
+    Module,
+    RequestMethod,
+    ValidationPipe,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserModule } from '../src/user/user.module';
@@ -7,8 +13,22 @@ import { UserEntity } from '../src/user/entities/user.entity';
 import { CreateUserDto } from '../src/user/dto/create-user.dto';
 import { config as dotenvConfig } from 'dotenv';
 import { hash } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import { AuthMiddleware } from '../src/user/middlewares/auth.middleware';
 
 dotenvConfig();
+
+@Module({
+    imports: [UserModule],
+})
+export class TestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(AuthMiddleware).forRoutes({
+            path: '*',
+            method: RequestMethod.ALL,
+        });
+    }
+}
 
 describe('UserController (e2e)', () => {
     let app: INestApplication;
@@ -39,13 +59,21 @@ describe('UserController (e2e)', () => {
         findOne: jest
             .fn()
             .mockImplementation(
-                async (options: Pick<UserEntity, 'username' | 'email'>) => {
+                async (
+                    options: Pick<UserEntity, 'username' | 'email'> | number,
+                ) => {
+                    console.log(options);
+
                     const users = await mockUsers();
-                    const find = users.find((user) =>
-                        options.email
-                            ? user.email === options.email
-                            : user.username === options.username,
-                    );
+                    const find = users.find((user) => {
+                        if (typeof options === 'object') {
+                            return options.email
+                                ? user.email === options.email
+                                : user.username === options.username;
+                        } else {
+                            return user.id === options;
+                        }
+                    });
 
                     if (find) {
                         return Promise.resolve(find);
@@ -62,7 +90,7 @@ describe('UserController (e2e)', () => {
 
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [UserModule],
+            imports: [TestModule],
         })
             .overrideProvider(getRepositoryToken(UserEntity))
             .useValue(mockUserRepository)
@@ -87,9 +115,31 @@ describe('UserController (e2e)', () => {
             .then((res) => {
                 expect(res.body.user.username).toBe('user');
                 expect(res.body.user.email).toBe('email@mail.ru');
-                expect(res.body.user.id).toBe(2);
                 expect(res.body.user.bio).toHaveLength(0);
                 expect(res.body.user.image).toHaveLength(0);
+            });
+    });
+
+    it('/ (GET) get current user', async () => {
+        const token = sign(
+            {
+                id: 1,
+                username: 'foo',
+                email: 'foo@mail.ru',
+            },
+            process.env.JWT_SECRET,
+        );
+
+        return request(app.getHttpServer())
+            .get('/user')
+            .expect(200)
+            .set({ Authorization: `Token ${token}` })
+            .then((res) => {
+                expect(res.body.user.username).toBe('foo');
+                expect(res.body.user.email).toBe('foo@mail.ru');
+                expect(res.body.user.bio).toHaveLength(0);
+                expect(res.body.user.image).toHaveLength(0);
+                expect(res.body.user.token).toBeDefined();
             });
     });
 
