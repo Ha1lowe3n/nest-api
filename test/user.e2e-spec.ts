@@ -88,6 +88,15 @@ describe('UserController (e2e)', () => {
             ),
     };
 
+    const token = sign(
+        {
+            id: 1,
+            username: 'foo',
+            email: 'foo@mail.ru',
+        },
+        process.env.JWT_SECRET,
+    );
+
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [TestModule],
@@ -121,15 +130,6 @@ describe('UserController (e2e)', () => {
     });
 
     it('/ (GET) get current user', async () => {
-        const token = sign(
-            {
-                id: 1,
-                username: 'foo',
-                email: 'foo@mail.ru',
-            },
-            process.env.JWT_SECRET,
-        );
-
         return request(app.getHttpServer())
             .get('/user')
             .set({ Authorization: `Token ${token}` })
@@ -162,21 +162,46 @@ describe('UserController (e2e)', () => {
             });
     });
 
+    it('/ (PATCH) update', async () => {
+        return request(app.getHttpServer())
+            .patch('/user')
+            .set({ Authorization: `Token ${token}` })
+            .send({
+                user: {
+                    bio: 'lala',
+                    image: 'rara',
+                },
+            })
+            .expect(200)
+            .then((res) => {
+                expect(res.body.user.username).toBe('foo');
+                expect(res.body.user.email).toBe('foo@mail.ru');
+                expect(res.body.user.bio).toHaveLength(4);
+                expect(res.body.user.image).toHaveLength(4);
+                expect(res.body.user.token).toBeDefined();
+            });
+    });
+
     describe('errors', () => {
         describe('errors from guard auth', () => {
             it('/ (GET) get current user --> invalid token', async () => {
-                const token = sign(
-                    {
-                        id: 2,
-                        username: 'foo',
-                        email: 'foo@mail.ru',
-                    },
-                    process.env.JWT_SECRET,
-                );
-
                 return request(app.getHttpServer())
                     .get('/user')
-                    .set({ Authorization: `Token ${token}` })
+                    .set({ Authorization: `Token fdddfh` })
+                    .expect(401)
+                    .expect({ statusCode: 401, message: 'Not authorized' });
+            });
+
+            it('/ (PATCH) update --> invalid token', async () => {
+                return request(app.getHttpServer())
+                    .patch('/user')
+                    .set({ Authorization: `Token hfjf` })
+                    .send({
+                        user: {
+                            bio: 'lala',
+                            image: 'rara',
+                        },
+                    })
                     .expect(401)
                     .expect({ statusCode: 401, message: 'Not authorized' });
             });
