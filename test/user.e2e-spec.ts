@@ -132,8 +132,8 @@ describe('UserController (e2e)', () => {
 
         return request(app.getHttpServer())
             .get('/user')
-            .expect(200)
             .set({ Authorization: `Token ${token}` })
+            .expect(200)
             .then((res) => {
                 expect(res.body.user.username).toBe('foo');
                 expect(res.body.user.email).toBe('foo@mail.ru');
@@ -163,6 +163,25 @@ describe('UserController (e2e)', () => {
     });
 
     describe('errors', () => {
+        describe('errors from guard auth', () => {
+            it('/ (GET) get current user --> invalid token', async () => {
+                const token = sign(
+                    {
+                        id: 2,
+                        username: 'foo',
+                        email: 'foo@mail.ru',
+                    },
+                    process.env.JWT_SECRET,
+                );
+
+                return request(app.getHttpServer())
+                    .get('/user')
+                    .set({ Authorization: `Token ${token}` })
+                    .expect(401)
+                    .expect({ statusCode: 401, message: 'Not authorized' });
+            });
+        });
+
         describe('errors from service', () => {
             it('/ (POST) create --> username are taken', async () => {
                 return request(app.getHttpServer())
