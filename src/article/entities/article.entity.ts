@@ -1,7 +1,9 @@
+import { UserEntity } from 'src/user/entities/user.entity';
 import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
@@ -23,10 +25,10 @@ export class ArticleEntity {
     @Column({ default: '' })
     body: string;
 
-    @Column('simple-array')
+    @Column('simple-array', { nullable: true })
     tagList: string[];
 
-    @Column('simple-array')
+    @Column({ default: 0 })
     favoritesCount: number;
 
     @CreateDateColumn()
@@ -34,4 +36,9 @@ export class ArticleEntity {
 
     @UpdateDateColumn()
     updateAt: Date;
+
+    @ManyToOne(() => UserEntity, (user) => user.articles, {
+        onDelete: 'CASCADE',
+    })
+    author: UserEntity;
 }

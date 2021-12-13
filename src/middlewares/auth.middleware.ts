@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { ExpressRequest } from 'src/types/expressRequest.interface';
-import { UserService } from '../user.service';
+import { UserService } from '../user/user.service';
 
 interface DecodeInterface {
     id: number;

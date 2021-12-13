@@ -11,9 +11,9 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IResponseUser } from './interfaces/response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
-import { User } from './decorators/user.decorator';
+import { User } from '../decorators/user.decorator';
 import { UserEntity } from './entities/user.entity';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '../guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller()

@@ -14,7 +14,7 @@ import { CreateUserDto } from '../src/user/dto/create-user.dto';
 import { config as dotenvConfig } from 'dotenv';
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { AuthMiddleware } from '../src/user/middlewares/auth.middleware';
+import { AuthMiddleware } from '../src/middlewares/auth.middleware';
 
 dotenvConfig();
 
@@ -42,6 +42,7 @@ describe('UserController (e2e)', () => {
                 password: await hash('123456', 10),
                 bio: '',
                 image: '',
+                articles: [],
             },
         ];
     };
