@@ -33,7 +33,7 @@ export class TestModule {
 describe('UserController (e2e)', () => {
     let app: INestApplication;
 
-    const mockUsers = async (): Promise<Omit<UserEntity, 'hashPasword'>[]> => {
+    const mockUsers = async (): Promise<Omit<UserEntity, 'hashPassword'>[]> => {
         return [
             {
                 id: 1,
@@ -62,8 +62,6 @@ describe('UserController (e2e)', () => {
                 async (
                     options: Pick<UserEntity, 'username' | 'email'> | number,
                 ) => {
-                    console.log(options);
-
                     const users = await mockUsers();
                     const find = users.find((user) => {
                         if (typeof options === 'object') {
@@ -267,6 +265,27 @@ describe('UserController (e2e)', () => {
         });
 
         describe('errors validation', () => {
+            it('/ (PATCH) update --> incorrect type of fields', async () => {
+                return request(app.getHttpServer())
+                    .patch('/user')
+                    .set({ Authorization: `Token ${token}` })
+                    .send({
+                        user: {
+                            bio: 123,
+                            image: 123,
+                        },
+                    })
+                    .expect(400)
+                    .expect({
+                        statusCode: 400,
+                        message: [
+                            'bio must be a string',
+                            'image must be a string',
+                        ],
+                        error: 'Bad Request',
+                    });
+            });
+
             describe('create', () => {
                 it('/ (POST) create --> username is empty', async () => {
                     return request(app.getHttpServer())

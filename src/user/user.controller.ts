@@ -4,7 +4,6 @@ import {
     Body,
     HttpCode,
     Get,
-    Req,
     UseGuards,
     Patch,
 } from '@nestjs/common';
